@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.arashi.blinkled.MainActivity">
+
+    <!--<TextView-->
+        <!--android:id="@+id/text_view1"-->
+        <!--android:textSize="20sp"-->
+        <!--android:layout_margin="20dp"-->
+        <!--android:textColor="#44f"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<TextView-->
+        <!--android:text="TextView"-->
+        <!--android:gravity="center"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/textView" />-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--<Button-->
+            <!--android:text="ON"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/on"-->
+            <!--android:layout_marginBottom="10dp"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_alignParentLeft="true"-->
+            <!--android:layout_alignParentStart="true"-->
+            <!--android:layout_marginLeft="60dp"-->
+            <!--android:layout_marginStart="60dp" />-->
+
+        <!--<Button-->
+            <!--android:text="OFF"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/off"-->
+            <!--android:layout_alignBaseline="@+id/on"-->
+            <!--android:layout_alignBottom="@+id/on"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_marginRight="54dp"-->
+            <!--android:layout_marginEnd="54dp" />-->
+
+    </RelativeLayout>
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/result"
+        android:textSize="20sp"
+        android:textColor="@color/colorPrimary"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="45dp" />
+
+    <!--<EditText-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:text="192.168.0.17:8080"-->
+        <!--android:ems="10"-->
+        <!--android:id="@+id/editText"-->
+        <!--android:textAlignment="center"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="105dp" />-->
+
+    <Button
+        android:text="Finish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/endButton"
+        android:layout_marginTop="54dp"
+        android:layout_below="@+id/result"
+        android:layout_centerHorizontal="true" />
+
+    <!--android:id="@+id/text_view2"-->
+        <!--android:textSize="20sp"-->
+        <!--android:textColor="#f44"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="33dp"-->
+        <!--android:layout_alignTop="@+id/text_view1"-->
+        <!--android:layout_alignLeft="@+id/text_view1"-->
+        <!--android:layout_alignStart="@+id/text_view1" />-->
+
+    <!--<TextView-->
+        <!--android:text="TextView"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/text_view2"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="130dp"-->
+        <!--android:id="@+id/rssi" />-->
+
+</RelativeLayout>
