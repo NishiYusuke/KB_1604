@@ -1,11 +1,13 @@
 package com.example.arashi.blinkled;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,26 +25,43 @@ import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.net.wifi.WifiManager;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
+
 import com.example.arashi.blinkled.AsyncSocket;
 import com.example.arashi.blinkled.R;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
+
+import static android.content.Context.WIFI_SERVICE;
 import static java.lang.Math.abs;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,LocationListener {
     //arduinoにアクセス
-    private EditText mEditText = null;
-    private TextView mText = null;
-    private Button mLedOn = null;
-    private Button mLedOff = null;
+//    private EditText mEditText = null;
+    private TextView mText = null; //arduinoからの信号を表示
+//    private Button mLedOn = null;
+//    private Button mLedOff = null;
+
+    //finish
+    private Button endButton = null;
+
+    //web表示
+    private WebView myWebView;
+    private static final String INITIAL_WEBSITE = "http://dotinstall.com";
 
 
     //gps
@@ -69,49 +88,72 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mEditText = (EditText)findViewById(R.id.editText);
         mText = (TextView)findViewById(R.id.result);
-        mLedOn = (Button)findViewById(R.id.on);
-        mLedOff = (Button)findViewById(R.id.off);
+//        mEditText = (EditText)findViewById(R.id.editText);
+//        mLedOn = (Button)findViewById(R.id.on);
+//        mLedOff = (Button)findViewById(R.id.off);
+//        mLedOn.setOnClickListener(this);
+//        mLedOff.setOnClickListener(this);
 
-        mLedOn.setOnClickListener(this);
-        mLedOff.setOnClickListener(this);
+        //finish
+//        endButton = (Button)findViewById(R.id.endButton);
+//        endButton.setOnClickListener(this);
+
 
         //gps
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, 1000);
-        } else {
-            locationStart();
-        }
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, 1000);
+//        } else {
+//            locationStart();
+//        }
 
 
         rssiText = (TextView)findViewById(R.id.rssi);
 
+        myWebView = (WebView) findViewById(R.id.myWebView);
+
+        myWebView.loadUrl(INITIAL_WEBSITE);
 
         //常に実行する関数を呼び出す
         startTimer();
 
 
+//        Document doc = null;
+//        try {
+////            doc = Jsoup.connect("http://www.google.co.jp").get();
+//            Document document = Jsoup.connect("http://www.google.co.jp").get();
+//            System.out.println(document.html());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
+//        Elements title = doc.select("title");
+//        Log.d("debug", "doc= " + doc);
+//        Log.d("debug", "title= " + title);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.on:
-                sendLedOperation("ON");
-                Log.v("LED" ,"ON");
-                break;
-            case R.id.off:
-                sendLedOperation("OFF");
-                Log.v("LED", "OFF");
-                break;
+//            case R.id.on:
+//                sendLedOperation("ON");
+//                Log.v("LED" ,"ON");
+//                break;
+//            case R.id.off:
+//                sendLedOperation("OFF");
+//                Log.v("LED", "OFF");
+//                break;
+//            case R.id.endButton:
+//                this.finish();
+//                break;
             default:
         }
     }
 
     private void sendLedOperation(String OnOff) {
 //        String editText = mEditText.getText().toString();
-        String editText = "192.168.0.17:8080";
+        String editText = "192.168.10.1:8080";
         String ip_and_port[] = editText.split(":");
         AsyncSocket socket = new AsyncSocket(ip_and_port[0], ip_and_port[1], mText);
         socket.execute(OnOff);
@@ -232,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    //一度呼ばれたら常に実行する関数
+    //一度呼ばれたら常に実行する関数 wifiとの電波強度で距離を推測
     public void startTimer() {
         // startTimeの取得
         startTime = SystemClock.elapsedRealtime(); // 起動してからの経過時間（ミリ秒）
@@ -251,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     rssiText.setText(String.valueOf(rssi));
                     arduinoAccess("on");
                     String res = mText.getText().toString();
-                    if(rssi < -50 &&  res.equals("Open")){
+                    if(rssi < -60 &&  res.equals("Open")){
                         if(check){
                             sendNotification();
                             check = false;
