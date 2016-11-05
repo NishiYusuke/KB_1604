@@ -23,9 +23,15 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -61,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //web表示
     private WebView myWebView;
-    private static final String INITIAL_WEBSITE = "http://dotinstall.com";
+    private static final String INITIAL_WEBSITE = "http://qiita.com/datsnet/items/e54ad69e95009394b1fe";
 
 
     //gps
@@ -110,27 +116,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         rssiText = (TextView)findViewById(R.id.rssi);
 
+        //website表示
         myWebView = (WebView) findViewById(R.id.myWebView);
-
         myWebView.loadUrl(INITIAL_WEBSITE);
 
         //常に実行する関数を呼び出す
         startTimer();
 
 
-//        Document doc = null;
-//        try {
-////            doc = Jsoup.connect("http://www.google.co.jp").get();
-//            Document document = Jsoup.connect("http://www.google.co.jp").get();
-//            System.out.println(document.html());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Document document = Jsoup.connect(INITIAL_WEBSITE).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String html = "<html><head><title>First parse</title></head>"
+                + "<body><p>Parsed HTML into a doc.</p></body></html>";
+//        Document doc = Jsoup.parse(html);
 
+//        Elements title = doc.select("title");
 
 //        Elements title = doc.select("title");
 //        Log.d("debug", "doc= " + doc);
 //        Log.d("debug", "title= " + title);
+
+//        HttpGet get = new HttpGet("http://www.google.co.jp");
+//        HttpResponse response = client.execute(get);
+//        Document doc = Jsoup.parse(EntityUtils.toString(response.getEntity(), "UTF-8"));
     }
 
     @Override
@@ -293,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     rssiText.setText(String.valueOf(rssi));
                     arduinoAccess("on");
                     String res = mText.getText().toString();
-                    if(rssi < -60 &&  res.equals("Open")){
+                    if(rssi < -50 &&  res.equals("Open")){
                         if(check){
                             sendNotification();
                             check = false;
