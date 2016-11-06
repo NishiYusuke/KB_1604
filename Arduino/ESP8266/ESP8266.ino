@@ -12,10 +12,11 @@
 
 #include <PubSubClient.h>//Used for connecting a cloud web-server of bluemix 
 
-//-------- Customise these values -----------
-const char* ssid = "fxli-sas";//Wifi rooter's ssid
-const char* password = "fxli1408";//Wifi rooter's passwprd
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <WiFiManager.h>
 
+//-------- Customise these values -----------
 const bool  SW= 0;//ESP8266's I/O pin number
 bool  SW_state=0,old_state=0;//Variables for checking door state "Open" or "Lock"
 
@@ -40,12 +41,19 @@ void callback(char* topic, byte* payload, unsigned int length) {//Callback funct
 
 void setup() {
  Serial.begin(115200);//Begin serial connection between ESP8266 and PC
+ WiFiManager wifiManager;//Used for making auto connection
+ /*
+  This function has two movement:
+  1.Checking non-volatile memory.
+  2.If ESP8266 can read  wifi rooter's SSID and Password from config file of non-volatile memory,ESP8266 tries to connect by those SSID and Password as wireless LAN adapter.
+  3.Otherwise,ESP8266 becomes an access point.
+    And User must connect the AP and set wifi rooter's SSID and Password into ESP8266 via web page of ESP8266's fixed Ip address.  
+  */
+ wifiManager.autoConnect();
+ 
  //-------- Indicate --------
  Serial.println();
- Serial.print("Connecting to ");
- Serial.print(ssid);
- 
- WiFi.begin(ssid, password);//Begin wifi connection between ESP8266 and wifi rooter
+ Serial.print("Connected!");
  
  //-------- I/O config --------
  pinMode(SW,INPUT);
