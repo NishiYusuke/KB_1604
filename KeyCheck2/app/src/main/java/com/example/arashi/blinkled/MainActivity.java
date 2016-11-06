@@ -64,7 +64,7 @@ import java.util.Locale;
 import static android.content.Context.WIFI_SERVICE;
 import static java.lang.Math.abs;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,LocationListener{
     //arduinoにアクセス
     private TextView mText = null; //arduinoからの信号を表示
 
@@ -81,10 +81,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     boolean check = true;
     Handler handlerTimer = new Handler();
 
-    //
+    //arudino
     String str;
     Handler handler= new Handler();
     String resSt ;
+
+    //gps
+    private LocationManager locationManager;
+    private TextView resText;
+    private int gpsChangeCount = 0;
 
     //履歴
     public ArrayList<String> items = new ArrayList<>();
@@ -98,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mText = (TextView)findViewById(R.id.result);
 
-//        rssiText = (TextView)findViewById(R.id.rssi);
+        resText = (TextView) findViewById(R.id.textView);
 
         myListView = (ListView) findViewById(R.id.myListView);
 
@@ -126,7 +131,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         items.add(0,"Open : 11月01日13:10:00");
         items.add(0,"Lock : 11月01日13:12:00");
 
-
+        //gps
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, 1000);
+        } else {
+            locationStart();
+        }
         startTimer();
 
     }
@@ -135,20 +145,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-//        Date date = new Date();
-//        SimpleDateFormat sdf1 = new SimpleDateFormat("MM'月'dd'日'HH:mm:ss");
-//
-//        String datast = sdf1.format(date);
-//        switch (v.getId()) {
-//            case R.id.button1:
-//                items.add(0,"check : "+datast);
-//                break;
-//
-//            default:
-//        }
-
-        myListView.setAdapter(adapter);
-
     }
 
     public void addList(String res){
@@ -280,6 +276,107 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Notificationを作成して通知
         manager.notify(NOTIFICATION_CLICK, builder.build());
     }
+
+
+    ///////////////////////////////////////// gps /////////////////////////////////////////
+    private void locationStart() {
+        Log.d("debug", "locationStart()");
+
+        // LocationManager インスタンス生成
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        final boolean gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (!gpsEnabled) {
+            // GPSを設定するように促す
+            Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(settingsIntent);
+            Log.d("debug", "gpsEnable, startActivity");
+        } else {
+            Log.d("debug", "gpsEnabled");
+        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, 1000);
+
+            Log.d("debug", "checkSelfPermission false");
+            return;
+        }
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 50, this);
+    }
+
+    // 結果の受け取り
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == 1000) {
+            // 使用が許可された
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("debug", "checkSelfPermission true");
+
+                locationStart();
+                return;
+
+            } else {
+                // それでも拒否された時の対応
+                Toast toast = Toast.makeText(this, "これ以上なにもできません", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        switch (status) {
+            case LocationProvider.AVAILABLE:
+                Log.d("debug", "LocationProvider.AVAILABLE");
+                break;
+            case LocationProvider.OUT_OF_SERVICE:
+                Log.d("debug", "LocationProvider.OUT_OF_SERVICE");
+                break;
+            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+                Log.d("debug", "LocationProvider.TEMPORARILY_UNAVAILABLE");
+                break;
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        // 緯度の表示
+//        TextView textView1 = (TextView) findViewById(R.id.text_view1);
+//        textView1.setText("ido:" + location.getLatitude());
+
+        gpsChangeCount++;
+
+        double ido = location.getLatitude();
+        double keido = location.getLongitude();
+
+        double idoDef = abs((double) location.getLatitude() - ido);
+        double keidoDef = abs((double) location.getLongitude() - keido);
+
+        Log.d("debug", "value: " + idoDef);
+        Log.d("debug", "value: " + keidoDef);
+
+        int defMeter = 100000;
+        if (idoDef > 0.00008983148616*defMeter || keidoDef > 0.00010966382364*defMeter) {
+            resText.setText("out : c " + String.valueOf(gpsChangeCount));
+            if(items.get(0).indexOf("Open") >= 0) {
+                sendNotification();
+            }
+        } else {
+            resText.setText("in : c " + String.valueOf(gpsChangeCount));
+        }
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
 
 
 }
