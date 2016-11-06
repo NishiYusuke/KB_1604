@@ -37,7 +37,7 @@ public class AsyncSocket extends AsyncTask<String, Void, String> {
             return data;
         } catch (IOException e) {
             e.printStackTrace();
-            return "wifi not connect";
+            return "not connect";
         }
     }
 

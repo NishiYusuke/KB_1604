@@ -4,123 +4,54 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
     tools:context="com.example.arashi.blinkled.MainActivity">
 
-    <!--<TextView-->
-        <!--android:id="@+id/text_view1"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_margin="20dp"-->
-        <!--android:textColor="#44f"-->
-        <!--android:textSize="20sp" />-->
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        >
+        android:layout_alignParentTop="true">
 
 
         <ListView
             android:id="@+id/myListView"
-            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="400dp"
-            android:layout_weight="0.15"
-            android:layout_alignParentTop="true"></ListView>
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:layout_weight="0.15"></ListView>
 
-
-        <!--<Button-->
-            <!--android:id="@+id/on"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:layout_alignParentLeft="true"-->
-            <!--android:layout_alignParentStart="true"-->
-            <!--android:layout_marginBottom="10dp"-->
-            <!--android:layout_marginLeft="60dp"-->
-            <!--android:layout_marginStart="60dp"-->
-            <!--android:text="ON" />-->
-
-        <!--<Button-->
-            <!--android:id="@+id/off"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignBaseline="@+id/on"-->
-            <!--android:layout_alignBottom="@+id/on"-->
-            <!--android:layout_alignParentEnd="true"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_marginEnd="54dp"-->
-            <!--android:layout_marginRight="54dp"-->
-            <!--android:text="OFF" />-->
-
-        <!--<EditText-->
-            <!--android:id="@+id/editText"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignBottom="@+id/endButton"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:layout_marginBottom="65dp"-->
-            <!--android:ems="10"-->
-            <!--android:inputType="textPersonName"-->
-            <!--android:selectAllOnFocus="true"-->
-            <!--android:text="192.168.20.51:8080"-->
-            <!--android:textAlignment="center" />-->
-
-        <!--<Button-->
-            <!--android:id="@+id/endButton"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Finish"-->
-            <!--android:gravity="center"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:layout_alignParentEnd="true" />-->
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="480dp"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="84dp"
+            android:layout_marginTop="480dp"
+            android:gravity="center"
             android:textSize="10sp" />
-
-        <!--<WebView-->
-            <!--android:layout_weight="1"-->
-            <!--android:id="@+id/myWebView"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="500dp"-->
-            <!--android:layout_marginTop="25dp"-->
-            <!--android:layout_below="@+id/result"-->
-            <!--android:layout_alignParentLeft="true"-->
-            <!--android:layout_alignParentStart="true"></WebView>-->
 
         <TextView
             android:id="@+id/result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lock"
-            android:textColor="@color/colorPrimary"
-            android:textSize="20sp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="450dp"
             android:gravity="center"
 
-            android:layout_marginTop="450dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
-        <!--<Button-->
-            <!--android:layout_width="300px"-->
-            <!--android:layout_height="100px"-->
-            <!--android:layout_marginTop="440dp"-->
-            <!--android:id="@+id/button1" />-->
+            android:text="Lock"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp" />
+
     </RelativeLayout>
 
     >

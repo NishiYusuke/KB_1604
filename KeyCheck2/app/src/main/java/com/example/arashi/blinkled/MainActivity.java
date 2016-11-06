@@ -65,26 +65,21 @@ import static android.content.Context.WIFI_SERVICE;
 import static java.lang.Math.abs;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,LocationListener{
-    //arduinoにアクセス
+    //arduino
     private TextView mText = null; //arduinoからの信号を表示
+    String str;
+    Handler handler= new Handler();
+    String resSt ;
 
     //通知
     private int REQUEST_CODE_MAIN_ACTIVITY = 1;
     private int NOTIFICATION_CLICK = 2;
 
-    //rssi
-    private TextView rssiText = null;
-
-    //timer
+    //タイマー
     private Runnable updateTimer;
     private long startTime;
     boolean check = true;
     Handler handlerTimer = new Handler();
-
-    //arudino
-    String str;
-    Handler handler= new Handler();
-    String resSt ;
 
     //gps
     private LocationManager locationManager;
@@ -107,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         myListView = (ListView) findViewById(R.id.myListView);
 
-        // Adapter - ArrayAdapter
         adapter = new ArrayAdapter<String>(
                 this,
                 R.layout.list_item,
@@ -118,10 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // ListViewに表示
         myListView.setAdapter(adapter);
 
-//        button1 = (Button)findViewById(R.id.button1);
-//        button1.setOnClickListener(this);
-
-        //defaultのlistデータ
+        //defaultの履歴データを用意しとく
         items.add(0,"Open : 11月01日10:10:30");
         items.add(0,"Lock : 11月01日10:10:43");
         items.add(0,"Open : 11月02日13:22:25");
@@ -147,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
     }
 
+    //履歴に追加
     public void addList(String res){
         Date date = new Date();
         SimpleDateFormat sdf1 = new SimpleDateFormat("MM'月'dd'日'HH:mm:ss");
@@ -154,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         items.add(0,res + " : "+datast);
     }
 
+    //ローカルでarduinoと通信（いまは使用していない）
     private void sendLedOperation(String OnOff) {
         String editText = "192.168.10.1:8080";
         String ip_and_port[] = editText.split(":");
@@ -162,13 +155,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         socket = null;
     }
 
-
-    //arduinoにアクセス
+    //arduinoにアクセス（いまは使用していない）
     public void arduinoAccess(String s){
         sendLedOperation("ON");
     }
 
-
+    //webから情報をとってくる
     public void search(){
         new Thread(new Runnable() {
 
@@ -205,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startTimer();
     }
 
-    // InputStream -> String
+    // InputStreamをStringに変換
     static String InputStreamToString(InputStream is) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
@@ -217,10 +209,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return sb.toString();
     }
 
-    //一度呼ばれたら常に実行する関数 wifiとの電波強度で距離を推測
+    //一度呼ばれたら常に実行する関数
     public void startTimer() {
         // startTimeの取得
-        startTime = SystemClock.elapsedRealtime(); // 起動してからの経過時間（ミリ秒）
+        startTime = SystemClock.elapsedRealtime();
 
         updateTimer = new Runnable() {
             @Override
@@ -241,15 +233,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //通知
     private void sendNotification() {
-        // Intent の作成
         Intent intent = new Intent(MainActivity.this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(
                 MainActivity.this, REQUEST_CODE_MAIN_ACTIVITY, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // LargeIcon の Bitmap を生成
         Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.icon);
 
-        // NotificationBuilderを作成
         NotificationCompat.Builder builder = new NotificationCompat.Builder(
                 getApplicationContext());
         builder.setContentIntent(contentIntent);
@@ -257,11 +246,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setTicker("key");
         // アイコン
         builder.setSmallIcon(R.drawable.icon);
-        // Notificationを開いたときに表示されるタイトル
+        // 表示されるタイトル
         builder.setContentTitle("key");
-        // Notificationを開いたときに表示されるサブタイトル
+        // 表示されるサブタイトル
         builder.setContentText("a key is open");
-        // Notificationを開いたときに表示されるアイコン
+        // 表示されるアイコン
         builder.setLargeIcon(largeIcon);
         // 通知するタイミング
         builder.setWhen(System.currentTimeMillis());
@@ -269,16 +258,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         builder.setDefaults(Notification.DEFAULT_SOUND
                 | Notification.DEFAULT_VIBRATE
                 | Notification.DEFAULT_LIGHTS);
-        // タップするとキャンセル(消える)
+        // タップするとキャンセル
         builder.setAutoCancel(true);
         // NotificationManagerを取得
         NotificationManager manager = (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-        // Notificationを作成して通知
+        // 通知
         manager.notify(NOTIFICATION_CLICK, builder.build());
     }
 
-
-    ///////////////////////////////////////// gps /////////////////////////////////////////
+    ///////////////////////////////////////// gps relate/////////////////////////////////////////
     private void locationStart() {
         Log.d("debug", "locationStart()");
 
@@ -305,7 +293,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 50, this);
     }
 
-    // 結果の受け取り
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == 1000) {
@@ -339,24 +326,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+
     @Override
     public void onLocationChanged(Location location) {
-        // 緯度の表示
-//        TextView textView1 = (TextView) findViewById(R.id.text_view1);
-//        textView1.setText("ido:" + location.getLatitude());
-
+        //gpsが変化した回数
         gpsChangeCount++;
-
+        //wifiモジュール、鍵のある場所
         double ido = 34.691192;
         double keido = 135.192088;
-
+        //現在地とのgpsの差を計算
         double idoDef = abs((double) location.getLatitude() - ido);
         double keidoDef = abs((double) location.getLongitude() - keido);
-
-        Log.d("debug", "value: " + idoDef);
-        Log.d("debug", "value: " + keidoDef);
-
+        //何m鍵があいた状態で移動した時通知をするか
         int defMeter = 10;
+        //通知をするかしないか判断
         if (idoDef > 0.00008983148616*defMeter || keidoDef > 0.00010966382364*defMeter) {
             resText.setText("out");
             if(items.get(0).indexOf("Open") >= 0) {
@@ -376,7 +359,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onProviderDisabled(String provider) {
 
     }
-
-
 
 }
