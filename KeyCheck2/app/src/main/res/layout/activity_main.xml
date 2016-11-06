@@ -30,8 +30,9 @@
 
         <ListView
             android:id="@+id/myListView"
+            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
-            android:layout_height="420dp"
+            android:layout_height="400dp"
             android:layout_weight="0.15"
             android:layout_alignParentTop="true"></ListView>
 
@@ -87,10 +88,11 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
             android:gravity="center"
+            android:layout_marginTop="480dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="84dp" />
+            android:layout_marginBottom="84dp"
+            android:textSize="10sp" />
 
         <!--<WebView-->
             <!--android:layout_weight="1"-->
@@ -106,12 +108,12 @@
             android:id="@+id/result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
+            android:text="Lock"
             android:textColor="@color/colorPrimary"
             android:textSize="20sp"
             android:gravity="center"
 
-            android:layout_marginTop="440dp"
+            android:layout_marginTop="450dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
         <!--<Button-->

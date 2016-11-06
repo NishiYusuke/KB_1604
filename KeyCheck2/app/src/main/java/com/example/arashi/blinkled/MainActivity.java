@@ -122,14 +122,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        button1.setOnClickListener(this);
 
         //defaultのlistデータ
-        items.add(0,"Open : 11月01日10:10:00");
-        items.add(0,"Lock : 11月01日10:11:00");
-        items.add(0,"Open : 11月01日13:10:00");
-        items.add(0,"Lock : 11月01日13:12:00");
-        items.add(0,"Open : 11月01日10:10:00");
-        items.add(0,"Lock : 11月01日10:11:00");
-        items.add(0,"Open : 11月01日13:10:00");
-        items.add(0,"Lock : 11月01日13:12:00");
+        items.add(0,"Open : 11月01日10:10:30");
+        items.add(0,"Lock : 11月01日10:10:43");
+        items.add(0,"Open : 11月02日13:22:25");
+        items.add(0,"Lock : 11月02日13:22:32");
+        items.add(0,"Open : 11月02日18:56:56");
+        items.add(0,"Lock : 11月02日18:57:01");
+        items.add(0,"Open : 11月03日07:34:11");
+        items.add(0,"Lock : 11月03日07:34:19");
 
         //gps
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -347,8 +347,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         gpsChangeCount++;
 
-        double ido = location.getLatitude();
-        double keido = location.getLongitude();
+        double ido = 34.691192;
+        double keido = 135.192088;
 
         double idoDef = abs((double) location.getLatitude() - ido);
         double keidoDef = abs((double) location.getLongitude() - keido);
@@ -356,14 +356,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d("debug", "value: " + idoDef);
         Log.d("debug", "value: " + keidoDef);
 
-        int defMeter = 100000;
+        int defMeter = 10;
         if (idoDef > 0.00008983148616*defMeter || keidoDef > 0.00010966382364*defMeter) {
-            resText.setText("out : c " + String.valueOf(gpsChangeCount));
+            resText.setText("out");
             if(items.get(0).indexOf("Open") >= 0) {
                 sendNotification();
             }
         } else {
-            resText.setText("in : c " + String.valueOf(gpsChangeCount));
+            resText.setText("in");
         }
     }
 
