@@ -83,14 +83,14 @@
             <!--android:layout_alignParentRight="true"-->
             <!--android:layout_alignParentEnd="true" />-->
 
-        <TextView
-            android:id="@+id/rssi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:gravity="center"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="84dp" />
+        <!--<TextView-->
+            <!--android:id="@+id/rssi"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="TextView"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:layout_marginBottom="84dp" />-->
 
         <!--<WebView-->
             <!--android:layout_weight="1"-->

@@ -48,7 +48,12 @@ import org.jsoup.select.Elements;
 import com.example.arashi.blinkled.AsyncSocket;
 import com.example.arashi.blinkled.R;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,8 +68,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //arduinoにアクセス
     private TextView mText = null; //arduinoからの信号を表示
 
-//    private Button button1 = null;
-
     //通知
     private int REQUEST_CODE_MAIN_ACTIVITY = 1;
     private int NOTIFICATION_CLICK = 2;
@@ -72,11 +75,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //rssi
     private TextView rssiText = null;
 
-    //タイマー
-    private Handler handler = new Handler();
+    //timer
     private Runnable updateTimer;
     private long startTime;
     boolean check = true;
+    Handler handlerTimer = new Handler();
+
+    //
+    String str;
+    Handler handler= new Handler();
+    String resSt ;
 
     //履歴
     public ArrayList<String> items = new ArrayList<>();
@@ -90,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mText = (TextView)findViewById(R.id.result);
 
-        rssiText = (TextView)findViewById(R.id.rssi);
+//        rssiText = (TextView)findViewById(R.id.rssi);
 
         myListView = (ListView) findViewById(R.id.myListView);
 
@@ -109,14 +117,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        button1.setOnClickListener(this);
 
         //defaultのlistデータ
-        items.add(0,"open : 11月01日10:10:00");
-        items.add(0,"close : 11月01日10:11:00");
-        items.add(0,"open : 11月01日13:10:00");
-        items.add(0,"close : 11月01日13:12:00");
-        items.add(0,"open : 11月01日10:10:00");
-        items.add(0,"close : 11月01日10:11:00");
-        items.add(0,"open : 11月01日13:10:00");
-        items.add(0,"close : 11月01日13:12:00");
+        items.add(0,"Open : 11月01日10:10:00");
+        items.add(0,"Lock : 11月01日10:11:00");
+        items.add(0,"Open : 11月01日13:10:00");
+        items.add(0,"Lock : 11月01日13:12:00");
+        items.add(0,"Open : 11月01日10:10:00");
+        items.add(0,"Lock : 11月01日10:11:00");
+        items.add(0,"Open : 11月01日13:10:00");
+        items.add(0,"Lock : 11月01日13:12:00");
 
 
         startTimer();
@@ -165,6 +173,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    public void search(){
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://teamhanshin.mybluemix.net/Door");
+                    HttpURLConnection con = (HttpURLConnection)url.openConnection();
+                    str = InputStreamToString(con.getInputStream());
+                    if(str.indexOf("Open") >= 0){
+                        resSt = "Open";
+                    }else if(str.indexOf("Lock") >= 0){
+                        resSt = "Lock";
+                    }else{
+                        resSt = "False";
+                    }
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(items.get(0).indexOf(resSt) < 0) {
+                                mText.setText(resSt);
+                                addList(resSt);
+                            }
+                        }
+                    });
+
+                } catch(Exception ex) {
+                    System.out.println(ex);
+                }
+            }
+        }).start();
+
+        startTimer();
+    }
+
+    // InputStream -> String
+    static String InputStreamToString(InputStream is) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+        br.close();
+        return sb.toString();
+    }
+
     //一度呼ばれたら常に実行する関数 wifiとの電波強度で距離を推測
     public void startTimer() {
         // startTimeの取得
@@ -177,36 +233,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d("debug",String.valueOf(t));
                 if( t > 3*1000){
                     startTime = SystemClock.elapsedRealtime();
-                    WifiManager manager = (WifiManager)getSystemService(WIFI_SERVICE);
-                    WifiInfo info = manager.getConnectionInfo();
-                    int rssi = info.getRssi();
-
-                    //arduinoの応答から履歴を作成
-                    arduinoAccess("on");
-                    String res = mText.getText().toString();
-                    int i = items.get(0).indexOf(res);
-                    //履歴に追加
-                    if(items.get(0).indexOf(res) < 0){
-                        addList(res);
-                    }
-
-                    rssiText.setText(String.valueOf(rssi) + " : " + String.valueOf(items.size()));
-
-                    if(rssi < -60 ){ //&&  res.equals("Open")
-                        if(check){
-                            sendNotification();
-                            check = false;
-                        }
-                    }else{
-                        check = true;
-                    }
-
+                    search();
                 }
-                handler.removeCallbacks(updateTimer);
-                handler.postDelayed(updateTimer, 10);
+                handlerTimer.removeCallbacks(updateTimer);
+                handlerTimer.postDelayed(updateTimer, 10);
             }
         };
-        handler.postDelayed(updateTimer, 10);
+        handlerTimer.postDelayed(updateTimer, 10);
     }
 
 
