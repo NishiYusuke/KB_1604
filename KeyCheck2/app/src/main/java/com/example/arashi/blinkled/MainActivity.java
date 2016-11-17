@@ -40,9 +40,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.net.wifi.WifiManager;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+//import org.jsoup.Jsoup;
+//import org.jsoup.nodes.Document;
+//import org.jsoup.select.Elements;
 
 
 import com.example.arashi.blinkled.AsyncSocket;
@@ -289,8 +289,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.d("debug", "checkSelfPermission false");
             return;
         }
-
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 50, this);
+//        sendNotification();
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, this);
     }
 
     @Override
@@ -329,6 +329,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onLocationChanged(Location location) {
+        sendNotification();
         //gpsが変化した回数
         gpsChangeCount++;
         //wifiモジュール、鍵のある場所
