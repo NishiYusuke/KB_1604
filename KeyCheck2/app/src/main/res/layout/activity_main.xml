@@ -23,7 +23,7 @@
         <ListView
             android:id="@+id/myListView"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="300dp"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
             android:layout_weight="0.15"
@@ -37,9 +37,10 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="84dp"
-            android:layout_marginTop="480dp"
+            android:layout_marginTop="500dp"
             android:gravity="center"
-            android:textSize="10sp" />
+            android:text="userstatus"
+            android:textSize="1sp" />
 
         <TextView
             android:id="@+id/result"
@@ -47,12 +48,23 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="450dp"
+            android:layout_marginTop="340dp"
             android:gravity="center"
 
             android:text="Lock"
             android:textColor="@color/colorPrimary"
             android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/alluserstatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="84dp"
+            android:layout_marginTop="370dp"
+            android:gravity="center"
+            android:text="alluserstatus"
+            android:textSize="15sp" />
 
     </RelativeLayout>
 

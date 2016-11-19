@@ -47,6 +47,7 @@ import android.net.wifi.WifiManager;
 
 import com.example.arashi.blinkled.AsyncSocket;
 import com.example.arashi.blinkled.R;
+import com.kii.cloud.storage.Kii;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -57,6 +58,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -88,8 +90,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //履歴
     public ArrayList<String> items = new ArrayList<>();
-    ListView myListView;
-    ArrayAdapter<String> adapter;
+    public ListView myListView;
+    public ArrayAdapter<String> adapter;
+
+    //Kiicloud
+    Kiicloudaccess kiicl = new Kiicloudaccess();
+
+    boolean firsttime = true;
+
+    private TextView alluserstatusText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,14 +123,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         myListView.setAdapter(adapter);
 
         //defaultの履歴データを用意しとく
-        items.add(0,"Open : 11月01日10:10:30");
-        items.add(0,"Lock : 11月01日10:10:43");
-        items.add(0,"Open : 11月02日13:22:25");
-        items.add(0,"Lock : 11月02日13:22:32");
-        items.add(0,"Open : 11月02日18:56:56");
-        items.add(0,"Lock : 11月02日18:57:01");
-        items.add(0,"Open : 11月03日07:34:11");
-        items.add(0,"Lock : 11月03日07:34:19");
+
+        items.add(0,"Open : 11月02日13:22:25" + "\nin : oohira | out : nishimura");
+        items.add(0,"Lock : 11月02日13:22:32" + "\nin : oohira | out : nishimura");
+        items.add(0,"Open : 11月02日18:56:56" + "\nin : nishimura | out : oohira");
+        items.add(0,"Lock : 11月02日18:57:01" + "\nin : nishimura| out : oohira");
+        items.add(0,"Open : 11月03日07:34:11" + "\nin : oohira nishimura | out : ");
+        items.add(0,"Lock : 11月03日07:34:19" + "\nin : oohira nishimura | out : ");
 
         //gps
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -129,6 +138,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             locationStart();
         }
         startTimer();
+
+        Kii.initialize(getApplicationContext(), "c7a2bc67", "de0419407e389bf0d82461ecf61ebed2", Kii.Site.JP);
+
+        //kiicloudにログイン
+        kiicl.groupID = "oi9cglm8a4asi291qnlbums98";
+        kiicl.username = "nishimura"; //oohira,nishimura
+        kiicl.password = "qwer"; //asdf,qwer
+        kiicl.userlogin();
+        alluserstatusText = (TextView) findViewById(R.id.alluserstatus);
 
     }
 
@@ -143,7 +161,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Date date = new Date();
         SimpleDateFormat sdf1 = new SimpleDateFormat("MM'月'dd'日'HH:mm:ss");
         String datast = sdf1.format(date);
-        items.add(0,res + " : "+datast);
+
+//        kiicl.kiiGroupQuerySearch();
+
+        if (firsttime != true){
+            items.add(0,res + " : "+datast + "\n" + alluserstatusText.getText());
+        }else {
+            firsttime = false;
+        }
+//        kiicl.inusers = "";
+
+
+
     }
 
     //ローカルでarduinoと通信（いまは使用していない）
@@ -159,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void arduinoAccess(String s){
         sendLedOperation("ON");
     }
+
 
     //webから情報をとってくる
     public void search(){
@@ -197,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startTimer();
     }
 
-    // InputStreamをStringに変換
+    // openかcloseの情報をとってきたものをInputStreamからStringに変換
     static String InputStreamToString(InputStream is) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
@@ -209,7 +239,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return sb.toString();
     }
 
-    //一度呼ばれたら常に実行する関数
+
+    //一定時間ごとに実行する関数
     public void startTimer() {
         // startTimeの取得
         startTime = SystemClock.elapsedRealtime();
@@ -218,10 +249,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void run() {
                 long t = SystemClock.elapsedRealtime() - startTime; // ミリ秒
-                Log.d("debug",String.valueOf(t));
-                if( t > 3*1000){
+//                Log.d("debug",String.valueOf(t));
+                if( t > 5*1000){
+                    Log.d("debug",String.valueOf(t));
                     startTime = SystemClock.elapsedRealtime();
                     search();
+                    kiicl.kiiGroupQuerySearch();
+                    if(kiicl.inusers == null){
+                        kiicl.inusers = "";
+                    }
+                    if(kiicl.outusers == null){
+                        kiicl.outusers = "";
+                    }
+
+
+                    alluserstatusText.setText("in : "+kiicl.inusers+"| out : "+kiicl.outusers);
+                    kiicl.inusers = "";
+                    kiicl.outusers = "";
+
                 }
                 handlerTimer.removeCallbacks(updateTimer);
                 handlerTimer.postDelayed(updateTimer, 10);
@@ -265,6 +310,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 通知
         manager.notify(NOTIFICATION_CLICK, builder.build());
     }
+
 
     ///////////////////////////////////////// gps relate/////////////////////////////////////////
     private void locationStart() {
@@ -326,28 +372,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    int defMeter = 5;
 
     @Override
     public void onLocationChanged(Location location) {
-        sendNotification();
         //gpsが変化した回数
         gpsChangeCount++;
         //wifiモジュール、鍵のある場所
-        double ido = 34.691192;
-        double keido = 135.192088;
+        double ido = 35.716086; //34.716172,ore34.7159,34.79117,35.716086
+        double keido = 139.763184; //135.233799,ore135.234,135.450037,139.763184
         //現在地とのgpsの差を計算
         double idoDef = abs((double) location.getLatitude() - ido);
         double keidoDef = abs((double) location.getLongitude() - keido);
         //何m鍵があいた状態で移動した時通知をするか
-        int defMeter = 10;
         //通知をするかしないか判断
         if (idoDef > 0.00008983148616*defMeter || keidoDef > 0.00010966382364*defMeter) {
-            resText.setText("out");
-            if(items.get(0).indexOf("Open") >= 0) {
-                sendNotification();
+            if("out" != resText.getText()){
+                Log.d("d",resText.getText().toString());
+//                defMeter = 10;
+
+                if(firsttime != true){
+                    if(items.get(0).indexOf("Open") >= 0) {
+                        resText.setText("out");
+                        sendNotification();
+                        kiicl.userstatus = "out";
+                        kiicl.kiiSave();
+                        kiicl.kiiGroupQueryStatus();
+
+                    }
+                }
             }
         } else {
-            resText.setText("in");
+//            defMeter = 0;
+
+            if("in" != resText.getText()) {
+                resText.setText("in");
+                kiicl.userstatus = "in";
+                kiicl.kiiSave();
+                kiicl.kiiGroupQueryStatus();
+            }
+
         }
     }
 
